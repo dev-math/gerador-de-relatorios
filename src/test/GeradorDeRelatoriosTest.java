@@ -14,6 +14,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import src.GeradorDeRelatorios;
+import src.Produto;
+import src.ProdutoPadrao;
+
 public class GeradorDeRelatoriosTest {
   private Produto[] produtos;
   private GeradorDeRelatorios gerador;
