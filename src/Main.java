@@ -5,20 +5,12 @@ import java.util.Comparator;
 
 import src.sort.SortStrategy;
 import src.sort.SortTypes;
-import src.sort.comparators.DescriptionComparator;
-import src.sort.comparators.PriceComparator;
-import src.sort.comparators.StockQuantityComparator;
+import src.sort.comparators.ComparatorTypes;
 
 /**
  * Main
  */
 public class Main {
-  public static final String ALG_INSERTIONSORT = "quick";
-  public static final String ALG_QUICKSORT = "insertion";
-  public static final String CRIT_DESC_CRESC = "descricao_c";
-  public static final String CRIT_PRECO_CRESC = "preco_c";
-  public static final String CRIT_ESTOQUE_CRESC = "estoque_c";
-
   public static void main(String[] args) {
     if (args.length < 4) {
 
@@ -40,19 +32,12 @@ public class Main {
     }
 
     String opcao_algoritmo = args[0];
-    SortStrategy sortStrategy = SortTypes.getSortingStrategyByName(opcao_algoritmo);
+    SortStrategy sortStrategy =
+        SortTypes.getSortingStrategyByName(opcao_algoritmo);
 
     String opcao_criterio_ord = args[1];
-    Comparator<Produto> comparador;
-    if (opcao_criterio_ord.equals(CRIT_DESC_CRESC)) {
-      comparador = new DescriptionComparator();
-    } else if (opcao_criterio_ord.equals(CRIT_PRECO_CRESC)) {
-      comparador = new PriceComparator();
-    } else if (opcao_criterio_ord.equals(CRIT_ESTOQUE_CRESC)) {
-      comparador = new StockQuantityComparator();
-    } else {
-      throw new RuntimeException("Critério de ordenação inválido!");
-    }
+    Comparator<Produto> comparador =
+        ComparatorTypes.getComparatorByName(opcao_criterio_ord);
 
     String opcao_criterio_filtro = args[2];
     String opcao_parametro_filtro = args[3];
