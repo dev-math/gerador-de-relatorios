@@ -2,6 +2,13 @@ package src;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Comparator;
+import src.algorithms.InsertionSort;
+import src.algorithms.QuickSort;
+import src.algorithms.SortingStrategy;
+import src.comparators.DescriptionComparator;
+import src.comparators.PriceComparator;
+import src.comparators.StockQuantityComparator;
 
 public class GeradorDeRelatorios {
 
@@ -24,14 +31,15 @@ public class GeradorDeRelatorios {
   public static final int FORMATO_ITALICO = 0b0010;
 
   private Produto[] produtos;
-  private String algoritmo;
+  private SortingStrategy sortingStrategy;
   private String criterio;
   private String filtro;
   private String argFiltro;
   private int format_flags;
 
-  public GeradorDeRelatorios(Produto[] produtos, String algoritmo,
-                             String criterio, String filtro, String argFiltro,
+  public GeradorDeRelatorios(Produto[] produtos,
+                             SortingStrategy sortingStrategy, String criterio,
+                             String filtro, String argFiltro,
                              int format_flags) {
 
     this.produtos = new Produto[produtos.length];
@@ -41,127 +49,11 @@ public class GeradorDeRelatorios {
       this.produtos[i] = produtos[i];
     }
 
-    this.algoritmo = algoritmo;
+    this.sortingStrategy = sortingStrategy;
     this.criterio = criterio;
     this.format_flags = format_flags;
     this.filtro = filtro;
     this.argFiltro = argFiltro;
-  }
-
-  private int particiona(int ini, int fim) {
-
-    Produto x = produtos[ini];
-    int i = (ini - 1);
-    int j = (fim + 1);
-
-    while (true) {
-
-      if (criterio.equals(CRIT_DESC_CRESC)) {
-
-        do {
-          j--;
-
-        } while (produtos[j].getDescricao().compareToIgnoreCase(
-                     x.getDescricao()) > 0);
-
-        do {
-          i++;
-
-        } while (produtos[i].getDescricao().compareToIgnoreCase(
-                     x.getDescricao()) < 0);
-      } else if (criterio.equals(CRIT_PRECO_CRESC)) {
-
-        do {
-          j--;
-
-        } while (produtos[j].getPreco() > x.getPreco());
-
-        do {
-          i++;
-
-        } while (produtos[i].getPreco() < x.getPreco());
-      }
-
-      else if (criterio.equals(CRIT_ESTOQUE_CRESC)) {
-
-        do {
-          j--;
-
-        } while (produtos[j].getQtdEstoque() > x.getQtdEstoque());
-
-        do {
-          i++;
-
-        } while (produtos[i].getQtdEstoque() < x.getQtdEstoque());
-
-      } else {
-
-        throw new RuntimeException("Criterio invalido!");
-      }
-
-      if (i < j) {
-        Produto temp = produtos[i];
-        produtos[i] = produtos[j];
-        produtos[j] = temp;
-      } else
-        return j;
-    }
-  }
-
-  private void ordena(int ini, int fim) {
-
-    if (algoritmo.equals(ALG_INSERTIONSORT)) {
-
-      for (int i = ini; i <= fim; i++) {
-
-        Produto x = produtos[i];
-        int j = (i - 1);
-
-        while (j >= ini) {
-
-          if (criterio.equals(CRIT_DESC_CRESC)) {
-
-            if (x.getDescricao().compareToIgnoreCase(
-                    produtos[j].getDescricao()) < 0) {
-
-              produtos[j + 1] = produtos[j];
-              j--;
-            } else
-              break;
-          } else if (criterio.equals(CRIT_PRECO_CRESC)) {
-
-            if (x.getPreco() < produtos[j].getPreco()) {
-
-              produtos[j + 1] = produtos[j];
-              j--;
-            } else
-              break;
-          } else if (criterio.equals(CRIT_ESTOQUE_CRESC)) {
-
-            if (x.getQtdEstoque() < produtos[j].getQtdEstoque()) {
-
-              produtos[j + 1] = produtos[j];
-              j--;
-            } else
-              break;
-          } else
-            throw new RuntimeException("Criterio invalido!");
-        }
-
-        produtos[j + 1] = x;
-      }
-    } else if (algoritmo.equals(ALG_QUICKSORT)) {
-
-      if (ini < fim) {
-
-        int q = particiona(ini, fim);
-
-        ordena(ini, q);
-        ordena(q + 1, fim);
-      }
-    } else {
-      throw new RuntimeException("Algoritmo invalido!");
-    }
   }
 
   public void debug() {
@@ -172,10 +64,19 @@ public class GeradorDeRelatorios {
   }
 
   public void geraRelatorio(String arquivoSaida) throws IOException {
-
     debug();
 
-    ordena(0, produtos.length - 1);
+    Comparator<Produto> comparator;
+    if (criterio.equals(CRIT_DESC_CRESC)) {
+      comparator = new DescriptionComparator();
+    } else if (criterio.equals(CRIT_PRECO_CRESC)) {
+      comparator = new PriceComparator();
+    } else if (criterio.equals(CRIT_ESTOQUE_CRESC)) {
+      comparator = new StockQuantityComparator();
+    } else {
+      throw new RuntimeException("Critério de ordenação inválido!");
+    }
+    sortingStrategy.sort(produtos, comparator);
 
     PrintWriter out = new PrintWriter(arquivoSaida);
 
@@ -315,6 +216,15 @@ public class GeradorDeRelatorios {
     }
 
     String opcao_algoritmo = args[0];
+    SortingStrategy sortStrategy;
+    if (opcao_algoritmo.equals(ALG_QUICKSORT)) {
+      sortStrategy = new QuickSort();
+    } else if (opcao_algoritmo.equals(ALG_INSERTIONSORT)) {
+      sortStrategy = new InsertionSort();
+    } else {
+      throw new RuntimeException("Algoritmo inválido!");
+    }
+
     String opcao_criterio_ord = args[1];
     String opcao_criterio_filtro = args[2];
     String opcao_parametro_filtro = args[3];
@@ -335,7 +245,7 @@ public class GeradorDeRelatorios {
     }
 
     GeradorDeRelatorios gdr = new GeradorDeRelatorios(
-        carregaProdutos(), opcao_algoritmo, opcao_criterio_ord,
+        carregaProdutos(), sortStrategy, opcao_criterio_ord,
         opcao_criterio_filtro, opcao_parametro_filtro, formato);
 
     try {
