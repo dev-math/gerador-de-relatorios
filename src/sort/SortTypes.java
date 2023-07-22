@@ -1,7 +1,7 @@
 package src.sort;
 
 /**
- * SortEnum
+ * SortTypes
  */
 public enum SortTypes {
   INSERTIONSORT("insertion", new InsertionSort()),
