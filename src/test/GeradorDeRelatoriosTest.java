@@ -5,7 +5,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,14 +12,16 @@ import org.jsoup.select.Elements;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import src.GeradorDeRelatorios;
 import src.Produto;
 import src.ProdutoPadrao;
+import src.algorithms.QuickSort;
+import src.algorithms.SortingStrategy;
 
 public class GeradorDeRelatoriosTest {
   private Produto[] produtos;
   private GeradorDeRelatorios gerador;
+  private SortingStrategy sortingStrategy = new QuickSort();
 
   @Before
   public void setUp() {
@@ -79,8 +80,9 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioTodos() {
-    gerador = new GeradorDeRelatorios(produtos, "quick", "descricao_c", "todos",
-                                      "", GeradorDeRelatorios.FORMATO_PADRAO);
+    gerador = new GeradorDeRelatorios(produtos, sortingStrategy, "descricao_c",
+                                      "todos", "",
+                                      GeradorDeRelatorios.FORMATO_PADRAO);
     try {
       gerador.geraRelatorio("saida_teste.html");
       String content = Files.readString(Paths.get("saida_teste.html"));
@@ -137,7 +139,7 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioFiltragemEstoque() {
-    gerador = new GeradorDeRelatorios(produtos, "quick", "preco_c",
+    gerador = new GeradorDeRelatorios(produtos, sortingStrategy, "preco_c",
                                       "estoque_menor_igual", "10",
                                       GeradorDeRelatorios.FORMATO_NEGRITO);
     try {
@@ -168,7 +170,7 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioFiltragemCategoria() {
-    gerador = new GeradorDeRelatorios(produtos, "quick", "descricao_c",
+    gerador = new GeradorDeRelatorios(produtos, sortingStrategy, "descricao_c",
                                       "categoria_igual", "Games",
                                       GeradorDeRelatorios.FORMATO_ITALICO);
     try {
@@ -190,29 +192,15 @@ public class GeradorDeRelatoriosTest {
   }
 
   @Test
-  public void testGeraRelatorioAlgoritmoInvalido() {
-    gerador =
-        new GeradorDeRelatorios(produtos, "invalido", "descricao_c", "todos",
-                                "", GeradorDeRelatorios.FORMATO_PADRAO);
-    try {
-      gerador.geraRelatorio("saida_teste.html");
-      fail("Deveria lançar uma exceção para algoritmo inválido.");
-    } catch (RuntimeException e) {
-      assertEquals("Algoritmo invalido!", e.getMessage());
-    } catch (IOException e) {
-      fail("Falha ao gerar o relatório: " + e.getMessage());
-    }
-  }
-
-  @Test
   public void testGeraRelatorioCriterioInvalido() {
-    gerador = new GeradorDeRelatorios(produtos, "quick", "invalido", "todos",
-                                      "", GeradorDeRelatorios.FORMATO_PADRAO);
+    gerador =
+        new GeradorDeRelatorios(produtos, sortingStrategy, "invalido", "todos",
+                                "", GeradorDeRelatorios.FORMATO_PADRAO);
     try {
       gerador.geraRelatorio("saida_teste.html");
       fail("Deveria lançar uma exceção para critério inválido.");
     } catch (RuntimeException e) {
-      assertEquals("Criterio invalido!", e.getMessage());
+      assertEquals("Critério de ordenação inválido!", e.getMessage());
     } catch (IOException e) {
       fail("Falha ao gerar o relatório: " + e.getMessage());
     }
@@ -220,9 +208,9 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioFiltroInvalido() {
-    gerador =
-        new GeradorDeRelatorios(produtos, "quick", "descricao_c", "invalido",
-                                "", GeradorDeRelatorios.FORMATO_PADRAO);
+    gerador = new GeradorDeRelatorios(produtos, sortingStrategy, "descricao_c",
+                                      "invalido", "",
+                                      GeradorDeRelatorios.FORMATO_PADRAO);
     try {
       gerador.geraRelatorio("saida_teste.html");
       fail("Deveria lançar uma exceção para filtro inválido.");
