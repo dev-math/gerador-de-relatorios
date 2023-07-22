@@ -17,6 +17,8 @@ import src.Produto;
 import src.ProdutoPadrao;
 import src.algorithms.QuickSort;
 import src.algorithms.SortingStrategy;
+import src.comparators.DescriptionComparator;
+import src.comparators.PriceComparator;
 
 public class GeradorDeRelatoriosTest {
   private Produto[] produtos;
@@ -80,8 +82,8 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioTodos() {
-    gerador = new GeradorDeRelatorios(produtos, sortingStrategy, "descricao_c",
-                                      "todos", "",
+    gerador = new GeradorDeRelatorios(produtos, sortingStrategy,
+                                      new DescriptionComparator(), "todos", "",
                                       GeradorDeRelatorios.FORMATO_PADRAO);
     try {
       gerador.geraRelatorio("saida_teste.html");
@@ -139,9 +141,9 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioFiltragemEstoque() {
-    gerador = new GeradorDeRelatorios(produtos, sortingStrategy, "preco_c",
-                                      "estoque_menor_igual", "10",
-                                      GeradorDeRelatorios.FORMATO_NEGRITO);
+    gerador = new GeradorDeRelatorios(
+        produtos, sortingStrategy, new PriceComparator(), "estoque_menor_igual",
+        "10", GeradorDeRelatorios.FORMATO_NEGRITO);
     try {
       gerador.geraRelatorio("saida_teste.html");
       String content = Files.readString(Paths.get("saida_teste.html"));
@@ -170,9 +172,9 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioFiltragemCategoria() {
-    gerador = new GeradorDeRelatorios(produtos, sortingStrategy, "descricao_c",
-                                      "categoria_igual", "Games",
-                                      GeradorDeRelatorios.FORMATO_ITALICO);
+    gerador = new GeradorDeRelatorios(
+        produtos, sortingStrategy, new DescriptionComparator(),
+        "categoria_igual", "Games", GeradorDeRelatorios.FORMATO_ITALICO);
     try {
       gerador.geraRelatorio("saida_teste.html");
       String content = Files.readString(Paths.get("saida_teste.html"));
@@ -192,25 +194,10 @@ public class GeradorDeRelatoriosTest {
   }
 
   @Test
-  public void testGeraRelatorioCriterioInvalido() {
-    gerador =
-        new GeradorDeRelatorios(produtos, sortingStrategy, "invalido", "todos",
-                                "", GeradorDeRelatorios.FORMATO_PADRAO);
-    try {
-      gerador.geraRelatorio("saida_teste.html");
-      fail("Deveria lançar uma exceção para critério inválido.");
-    } catch (RuntimeException e) {
-      assertEquals("Critério de ordenação inválido!", e.getMessage());
-    } catch (IOException e) {
-      fail("Falha ao gerar o relatório: " + e.getMessage());
-    }
-  }
-
-  @Test
   public void testGeraRelatorioFiltroInvalido() {
-    gerador = new GeradorDeRelatorios(produtos, sortingStrategy, "descricao_c",
-                                      "invalido", "",
-                                      GeradorDeRelatorios.FORMATO_PADRAO);
+    gerador = new GeradorDeRelatorios(produtos, sortingStrategy,
+                                      new DescriptionComparator(), "invalido",
+                                      "", GeradorDeRelatorios.FORMATO_PADRAO);
     try {
       gerador.geraRelatorio("saida_teste.html");
       fail("Deveria lançar uma exceção para filtro inválido.");
