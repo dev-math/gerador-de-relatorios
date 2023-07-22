@@ -1,4 +1,4 @@
-package src.comparators;
+package src.sort.comparators;
 
 import java.util.Comparator;
 import src.Produto;

@@ -3,11 +3,11 @@ package src;
 import java.io.IOException;
 import java.util.Comparator;
 
-import src.comparators.DescriptionComparator;
-import src.comparators.PriceComparator;
-import src.comparators.StockQuantityComparator;
 import src.sort.SortStrategy;
 import src.sort.SortTypes;
+import src.sort.comparators.DescriptionComparator;
+import src.sort.comparators.PriceComparator;
+import src.sort.comparators.StockQuantityComparator;
 
 /**
  * Main

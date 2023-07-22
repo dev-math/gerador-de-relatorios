@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,13 +13,14 @@ import org.jsoup.select.Elements;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import src.GeradorDeRelatorios;
 import src.Produto;
 import src.ProdutoPadrao;
-import src.comparators.DescriptionComparator;
-import src.comparators.PriceComparator;
 import src.sort.QuickSort;
 import src.sort.SortStrategy;
+import src.sort.comparators.DescriptionComparator;
+import src.sort.comparators.PriceComparator;
 
 public class GeradorDeRelatoriosTest {
   private Produto[] produtos;
