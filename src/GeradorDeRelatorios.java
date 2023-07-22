@@ -3,7 +3,8 @@ package src;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Comparator;
-import src.algorithms.SortingStrategy;
+
+import src.sort.SortStrategy;
 
 public class GeradorDeRelatorios {
   public static final String FILTRO_TODOS = "todos";
@@ -18,14 +19,14 @@ public class GeradorDeRelatorios {
   public static final int FORMATO_ITALICO = 0b0010;
 
   private Produto[] produtos;
-  private SortingStrategy sortingStrategy;
+  private SortStrategy sortingStrategy;
   private Comparator<Produto> criterioOrdenacao;
   private String filtro;
   private String argFiltro;
   private int format_flags;
 
   public GeradorDeRelatorios(Produto[] produtos,
-                             SortingStrategy sortingStrategy,
+                             SortStrategy sortingStrategy,
                              Comparator<Produto> criterioOrdenacao,
                              String filtro, String argFiltro,
                              int format_flags) {

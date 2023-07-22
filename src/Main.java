@@ -3,12 +3,11 @@ package src;
 import java.io.IOException;
 import java.util.Comparator;
 
-import src.algorithms.InsertionSort;
-import src.algorithms.QuickSort;
-import src.algorithms.SortingStrategy;
 import src.comparators.DescriptionComparator;
 import src.comparators.PriceComparator;
 import src.comparators.StockQuantityComparator;
+import src.sort.SortStrategy;
+import src.sort.SortTypes;
 
 /**
  * Main
@@ -25,7 +24,7 @@ public class Main {
 
       System.out.println("Uso:");
       System.out.println(
-          "\tjava " + GeradorDeRelatorios.class.getName() +
+          "\tjava " + Main.class.getName() +
           " <algoritmo> <critério de ordenação> <critério de filtragem> <parâmetro de filtragem> <opções de formatação>");
       System.out.println("Onde:");
       System.out.println("\talgoritmo: 'quick' ou 'insertion'");
@@ -41,14 +40,7 @@ public class Main {
     }
 
     String opcao_algoritmo = args[0];
-    SortingStrategy sortStrategy;
-    if (opcao_algoritmo.equals(ALG_QUICKSORT)) {
-      sortStrategy = new QuickSort();
-    } else if (opcao_algoritmo.equals(ALG_INSERTIONSORT)) {
-      sortStrategy = new InsertionSort();
-    } else {
-      throw new RuntimeException("Algoritmo inválido!");
-    }
+    SortStrategy sortStrategy = SortTypes.getSortingStrategyByName(opcao_algoritmo);
 
     String opcao_criterio_ord = args[1];
     Comparator<Produto> comparador;

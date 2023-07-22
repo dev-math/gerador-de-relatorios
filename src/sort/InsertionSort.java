@@ -1,9 +1,9 @@
-package src.algorithms;
+package src.sort;
 
 import java.util.Comparator;
 import src.Produto;
 
-public class InsertionSort implements SortingStrategy {
+public class InsertionSort implements SortStrategy {
   public void sort(Produto[] array, Comparator<Produto> comparator) {
     for (int i = 1; i < array.length; i++) {
       Produto current = array[i];

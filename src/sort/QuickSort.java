@@ -1,9 +1,9 @@
-package src.algorithms;
+package src.sort;
 
 import java.util.Comparator;
 import src.Produto;
 
-public class QuickSort implements SortingStrategy {
+public class QuickSort implements SortStrategy {
   public void sort(Produto[] array, Comparator<Produto> comparator) {
     quickSort(array, 0, array.length - 1, comparator);
   }

@@ -15,15 +15,15 @@ import org.junit.Test;
 import src.GeradorDeRelatorios;
 import src.Produto;
 import src.ProdutoPadrao;
-import src.algorithms.QuickSort;
-import src.algorithms.SortingStrategy;
 import src.comparators.DescriptionComparator;
 import src.comparators.PriceComparator;
+import src.sort.QuickSort;
+import src.sort.SortStrategy;
 
 public class GeradorDeRelatoriosTest {
   private Produto[] produtos;
   private GeradorDeRelatorios gerador;
-  private SortingStrategy sortingStrategy = new QuickSort();
+  private SortStrategy sortingStrategy = new QuickSort();
 
   @Before
   public void setUp() {
