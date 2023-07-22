@@ -4,16 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Comparator;
 import src.algorithms.SortingStrategy;
-import src.comparators.DescriptionComparator;
-import src.comparators.PriceComparator;
-import src.comparators.StockQuantityComparator;
 
 public class GeradorDeRelatorios {
-
-  public static final String CRIT_DESC_CRESC = "descricao_c";
-  public static final String CRIT_PRECO_CRESC = "preco_c";
-  public static final String CRIT_ESTOQUE_CRESC = "estoque_c";
-
   public static final String FILTRO_TODOS = "todos";
   public static final String FILTRO_ESTOQUE_MENOR_OU_IQUAL_A =
       "estoque_menor_igual";
@@ -27,13 +19,14 @@ public class GeradorDeRelatorios {
 
   private Produto[] produtos;
   private SortingStrategy sortingStrategy;
-  private String criterio;
+  private Comparator<Produto> criterioOrdenacao;
   private String filtro;
   private String argFiltro;
   private int format_flags;
 
   public GeradorDeRelatorios(Produto[] produtos,
-                             SortingStrategy sortingStrategy, String criterio,
+                             SortingStrategy sortingStrategy,
+                             Comparator<Produto> criterioOrdenacao,
                              String filtro, String argFiltro,
                              int format_flags) {
 
@@ -45,7 +38,7 @@ public class GeradorDeRelatorios {
     }
 
     this.sortingStrategy = sortingStrategy;
-    this.criterio = criterio;
+    this.criterioOrdenacao = criterioOrdenacao;
     this.format_flags = format_flags;
     this.filtro = filtro;
     this.argFiltro = argFiltro;
@@ -58,20 +51,11 @@ public class GeradorDeRelatorios {
     System.out.println("parametro filtro = '" + argFiltro + "'");
   }
 
-  public void geraRelatorio(String arquivoSaida) throws IOException {
+  public void geraRelatorio(String arquivoSaida)
+      throws IOException {
     debug();
 
-    Comparator<Produto> comparator;
-    if (criterio.equals(CRIT_DESC_CRESC)) {
-      comparator = new DescriptionComparator();
-    } else if (criterio.equals(CRIT_PRECO_CRESC)) {
-      comparator = new PriceComparator();
-    } else if (criterio.equals(CRIT_ESTOQUE_CRESC)) {
-      comparator = new StockQuantityComparator();
-    } else {
-      throw new RuntimeException("Critério de ordenação inválido!");
-    }
-    sortingStrategy.sort(produtos, comparator);
+    sortingStrategy.sort(produtos, criterioOrdenacao);
 
     PrintWriter out = new PrintWriter(arquivoSaida);
 

@@ -1,9 +1,14 @@
 package src;
 
 import java.io.IOException;
+import java.util.Comparator;
+
 import src.algorithms.InsertionSort;
 import src.algorithms.QuickSort;
 import src.algorithms.SortingStrategy;
+import src.comparators.DescriptionComparator;
+import src.comparators.PriceComparator;
+import src.comparators.StockQuantityComparator;
 
 /**
  * Main
@@ -11,6 +16,9 @@ import src.algorithms.SortingStrategy;
 public class Main {
   public static final String ALG_INSERTIONSORT = "quick";
   public static final String ALG_QUICKSORT = "insertion";
+  public static final String CRIT_DESC_CRESC = "descricao_c";
+  public static final String CRIT_PRECO_CRESC = "preco_c";
+  public static final String CRIT_ESTOQUE_CRESC = "estoque_c";
 
   public static void main(String[] args) {
     if (args.length < 4) {
@@ -35,7 +43,7 @@ public class Main {
     String opcao_algoritmo = args[0];
     SortingStrategy sortStrategy;
     if (opcao_algoritmo.equals(ALG_QUICKSORT)) {
-      sortStrategy = new src.algorithms.QuickSort();
+      sortStrategy = new QuickSort();
     } else if (opcao_algoritmo.equals(ALG_INSERTIONSORT)) {
       sortStrategy = new InsertionSort();
     } else {
@@ -43,6 +51,17 @@ public class Main {
     }
 
     String opcao_criterio_ord = args[1];
+    Comparator<Produto> comparador;
+    if (opcao_criterio_ord.equals(CRIT_DESC_CRESC)) {
+      comparador = new DescriptionComparator();
+    } else if (opcao_criterio_ord.equals(CRIT_PRECO_CRESC)) {
+      comparador = new PriceComparator();
+    } else if (opcao_criterio_ord.equals(CRIT_ESTOQUE_CRESC)) {
+      comparador = new StockQuantityComparator();
+    } else {
+      throw new RuntimeException("Critério de ordenação inválido!");
+    }
+
     String opcao_criterio_filtro = args[2];
     String opcao_parametro_filtro = args[3];
 
@@ -64,7 +83,7 @@ public class Main {
     Produto[] produtos = carregaProdutos();
 
     GeradorDeRelatorios gdr = new GeradorDeRelatorios(
-        produtos, sortStrategy, opcao_criterio_ord, opcao_criterio_filtro,
+        produtos, sortStrategy, comparador, opcao_criterio_filtro,
         opcao_parametro_filtro, formato);
 
     try {
