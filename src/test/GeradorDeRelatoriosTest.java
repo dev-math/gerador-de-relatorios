@@ -5,7 +5,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,10 +12,13 @@ import org.jsoup.select.Elements;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import src.GeradorDeRelatorios;
 import src.Produto;
 import src.ProdutoPadrao;
+import src.filters.CategoryEqualsFilter;
+import src.filters.FilterStrategy;
+import src.filters.NoFilter;
+import src.filters.StockLessThanOrEqualFilter;
 import src.sort.QuickSort;
 import src.sort.SortStrategy;
 import src.sort.comparators.DescriptionComparator;
@@ -84,9 +86,9 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioTodos() {
-    gerador = new GeradorDeRelatorios(produtos, sortingStrategy,
-                                      new DescriptionComparator(), "todos", "",
-                                      GeradorDeRelatorios.FORMATO_PADRAO);
+    gerador = new GeradorDeRelatorios(
+        produtos, sortingStrategy, new DescriptionComparator(), new NoFilter(),
+        GeradorDeRelatorios.FORMATO_PADRAO);
     try {
       gerador.geraRelatorio("saida_teste.html");
       String content = Files.readString(Paths.get("saida_teste.html"));
@@ -143,9 +145,11 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioFiltragemEstoque() {
-    gerador = new GeradorDeRelatorios(
-        produtos, sortingStrategy, new PriceComparator(), "estoque_menor_igual",
-        "10", GeradorDeRelatorios.FORMATO_NEGRITO);
+    FilterStrategy stockLEFilter = new StockLessThanOrEqualFilter();
+    stockLEFilter.setFilterArg("10");
+    gerador = new GeradorDeRelatorios(produtos, sortingStrategy,
+                                      new PriceComparator(), stockLEFilter,
+                                      GeradorDeRelatorios.FORMATO_NEGRITO);
     try {
       gerador.geraRelatorio("saida_teste.html");
       String content = Files.readString(Paths.get("saida_teste.html"));
@@ -174,9 +178,12 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioFiltragemCategoria() {
+    FilterStrategy categoryEquals = new CategoryEqualsFilter();
+    categoryEquals.setFilterArg("Games");
+
     gerador = new GeradorDeRelatorios(
-        produtos, sortingStrategy, new DescriptionComparator(),
-        "categoria_igual", "Games", GeradorDeRelatorios.FORMATO_ITALICO);
+        produtos, sortingStrategy, new DescriptionComparator(), categoryEquals,
+        GeradorDeRelatorios.FORMATO_ITALICO);
     try {
       gerador.geraRelatorio("saida_teste.html");
       String content = Files.readString(Paths.get("saida_teste.html"));
@@ -190,21 +197,6 @@ public class GeradorDeRelatoriosTest {
         assertTrue("O produto não é da categoria 'Games'",
                    categoria.equalsIgnoreCase("Games"));
       }
-    } catch (IOException e) {
-      fail("Falha ao gerar o relatório: " + e.getMessage());
-    }
-  }
-
-  @Test
-  public void testGeraRelatorioFiltroInvalido() {
-    gerador = new GeradorDeRelatorios(produtos, sortingStrategy,
-                                      new DescriptionComparator(), "invalido",
-                                      "", GeradorDeRelatorios.FORMATO_PADRAO);
-    try {
-      gerador.geraRelatorio("saida_teste.html");
-      fail("Deveria lançar uma exceção para filtro inválido.");
-    } catch (RuntimeException e) {
-      assertEquals("Filtro invalido!", e.getMessage());
     } catch (IOException e) {
       fail("Falha ao gerar o relatório: " + e.getMessage());
     }
