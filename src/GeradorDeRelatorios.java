@@ -3,15 +3,10 @@ package src;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Comparator;
-
+import src.filters.FilterStrategy;
 import src.sort.SortStrategy;
 
 public class GeradorDeRelatorios {
-  public static final String FILTRO_TODOS = "todos";
-  public static final String FILTRO_ESTOQUE_MENOR_OU_IQUAL_A =
-      "estoque_menor_igual";
-  public static final String FILTRO_CATEGORIA_IGUAL_A = "categoria_igual";
-
   // operador bit a bit "ou" pode ser usado para combinar mais de
   // um estilo de formatacao simultaneamente (veja como no main)
   public static final int FORMATO_PADRAO = 0b0000;
@@ -21,15 +16,12 @@ public class GeradorDeRelatorios {
   private Produto[] produtos;
   private SortStrategy sortingStrategy;
   private Comparator<Produto> criterioOrdenacao;
-  private String filtro;
-  private String argFiltro;
+  private FilterStrategy filter;
   private int format_flags;
 
-  public GeradorDeRelatorios(Produto[] produtos,
-                             SortStrategy sortingStrategy,
+  public GeradorDeRelatorios(Produto[] produtos, SortStrategy sortingStrategy,
                              Comparator<Produto> criterioOrdenacao,
-                             String filtro, String argFiltro,
-                             int format_flags) {
+                             FilterStrategy filter, int format_flags) {
 
     this.produtos = new Produto[produtos.length];
 
@@ -41,21 +33,10 @@ public class GeradorDeRelatorios {
     this.sortingStrategy = sortingStrategy;
     this.criterioOrdenacao = criterioOrdenacao;
     this.format_flags = format_flags;
-    this.filtro = filtro;
-    this.argFiltro = argFiltro;
+    this.filter = filter;
   }
 
-  public void debug() {
-
-    System.out.println("Gerando relatório para array contendo " +
-                       produtos.length + " produto(s)");
-    System.out.println("parametro filtro = '" + argFiltro + "'");
-  }
-
-  public void geraRelatorio(String arquivoSaida)
-      throws IOException {
-    debug();
-
+  public void geraRelatorio(String arquivoSaida) throws IOException {
     sortingStrategy.sort(produtos, criterioOrdenacao);
 
     PrintWriter out = new PrintWriter(arquivoSaida);
@@ -71,22 +52,7 @@ public class GeradorDeRelatorios {
     for (int i = 0; i < produtos.length; i++) {
 
       Produto p = produtos[i];
-      boolean selecionado = false;
-
-      if (filtro.equals(FILTRO_TODOS)) {
-
-        selecionado = true;
-      } else if (filtro.equals(FILTRO_ESTOQUE_MENOR_OU_IQUAL_A)) {
-
-        if (p.getQtdEstoque() <= Integer.parseInt(argFiltro))
-          selecionado = true;
-      } else if (filtro.equals(FILTRO_CATEGORIA_IGUAL_A)) {
-
-        if (p.getCategoria().equalsIgnoreCase(argFiltro))
-          selecionado = true;
-      } else {
-        throw new RuntimeException("Filtro invalido!");
-      }
+      boolean selecionado = filter.test(p);
 
       if (selecionado) {
 
