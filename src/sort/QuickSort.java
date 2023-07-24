@@ -1,7 +1,8 @@
 package src.sort;
 
 import java.util.Comparator;
-import src.Produto;
+
+import src.produto.Produto;
 
 public class QuickSort implements SortStrategy {
   public void sort(Produto[] array, Comparator<Produto> comparator) {

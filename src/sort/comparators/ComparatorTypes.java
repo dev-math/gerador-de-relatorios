@@ -1,7 +1,8 @@
 package src.sort.comparators;
 
 import java.util.Comparator;
-import src.Produto;
+
+import src.produto.Produto;
 
 /**
  * ComparatorTypes

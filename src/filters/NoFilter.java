@@ -1,6 +1,6 @@
 package src.filters;
 
-import src.Produto;
+import src.produto.Produto;
 
 /**
  * NoFilter

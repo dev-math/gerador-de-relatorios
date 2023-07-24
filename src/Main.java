@@ -1,9 +1,14 @@
 package src;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import src.filters.FilterStrategy;
 import src.filters.FilterTypes;
+import src.produto.Produto;
+import src.produto.ProdutoPadrao;
+import src.produto.formatacao.FormatTypes;
 import src.sort.SortStrategy;
 import src.sort.SortTypes;
 import src.sort.comparators.ComparatorTypes;
@@ -12,6 +17,27 @@ import src.sort.comparators.ComparatorTypes;
  * Main
  */
 public class Main {
+  private static List<FormatTypes> parseFormatFlags(String[] args) {
+    String[] formatOptions = new String[2];
+
+    if (args.length > 4) {
+      formatOptions[0] = args[4];
+    }
+
+    if (args.length > 5) {
+      formatOptions[1] = args[5];
+    }
+
+    List<FormatTypes> formatList = new ArrayList<>();
+
+    for (String option : formatOptions) {
+      FormatTypes formatType = FormatTypes.getFormatTypeByName(option);
+      formatList.add(formatType);
+    }
+
+    return formatList;
+  }
+
   public static void main(String[] args) {
     if (args.length < 4) {
 
@@ -45,25 +71,12 @@ public class Main {
     FilterStrategy filter = FilterTypes.getFilterStrategyByName(
         opcao_criterio_filtro, opcao_parametro_filtro);
 
-    String[] opcoes_formatacao = new String[2];
-    opcoes_formatacao[0] = args.length > 4 ? args[4] : null;
-    opcoes_formatacao[1] = args.length > 5 ? args[5] : null;
-    int formato = GeradorDeRelatorios.FORMATO_PADRAO;
-
-    for (int i = 0; i < opcoes_formatacao.length; i++) {
-      String op = opcoes_formatacao[i];
-      formato |= (op != null ? op.equals("negrito")
-                                   ? GeradorDeRelatorios.FORMATO_NEGRITO
-                                   : (op.equals("italico")
-                                          ? GeradorDeRelatorios.FORMATO_ITALICO
-                                          : 0)
-                             : 0);
-    }
-
     Produto[] produtos = carregaProdutos();
 
+    List<FormatTypes> formatOptions = parseFormatFlags(args);
+
     GeradorDeRelatorios gdr = new GeradorDeRelatorios(
-        produtos, sortStrategy, comparador, filter, formato);
+        produtos, sortStrategy, comparador, filter, formatOptions);
 
     try {
       gdr.geraRelatorio("saida.html");

@@ -3,25 +3,25 @@ package src;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Comparator;
+import java.util.List;
 import src.filters.FilterStrategy;
+import src.produto.Produto;
+import src.produto.ProdutoItalico;
+import src.produto.ProdutoNegrito;
+import src.produto.formatacao.FormatTypes;
 import src.sort.SortStrategy;
 
 public class GeradorDeRelatorios {
-  // operador bit a bit "ou" pode ser usado para combinar mais de
-  // um estilo de formatacao simultaneamente (veja como no main)
-  public static final int FORMATO_PADRAO = 0b0000;
-  public static final int FORMATO_NEGRITO = 0b0001;
-  public static final int FORMATO_ITALICO = 0b0010;
-
   private Produto[] produtos;
   private SortStrategy sortingStrategy;
   private Comparator<Produto> criterioOrdenacao;
   private FilterStrategy filter;
-  private int format_flags;
+  private List<FormatTypes> formatDecorators;
 
   public GeradorDeRelatorios(Produto[] produtos, SortStrategy sortingStrategy,
                              Comparator<Produto> criterioOrdenacao,
-                             FilterStrategy filter, int format_flags) {
+                             FilterStrategy filter,
+                             List<FormatTypes> formatDecorators) {
 
     this.produtos = new Produto[produtos.length];
 
@@ -32,7 +32,7 @@ public class GeradorDeRelatorios {
 
     this.sortingStrategy = sortingStrategy;
     this.criterioOrdenacao = criterioOrdenacao;
-    this.format_flags = format_flags;
+    this.formatDecorators = formatDecorators;
     this.filter = filter;
   }
 
@@ -55,32 +55,20 @@ public class GeradorDeRelatorios {
       boolean selecionado = filter.test(p);
 
       if (selecionado) {
-
-        out.print("<li>");
-
-        if ((format_flags & FORMATO_ITALICO) > 0) {
-
-          out.print("<span style=\"font-style:italic\">");
+        for (FormatTypes formatType : formatDecorators) {
+          switch (formatType) {
+          case BOLD:
+            p = new ProdutoNegrito(p);
+            break;
+          case ITALIC:
+            p = new ProdutoItalico(p);
+            break;
+          default:
+            break;
+          }
         }
 
-        if ((format_flags & FORMATO_NEGRITO) > 0) {
-
-          out.print("<span style=\"font-weight:bold\">");
-        }
-
-        out.print(p.formataParaImpressao());
-
-        if ((format_flags & FORMATO_NEGRITO) > 0) {
-
-          out.print("</span>");
-        }
-
-        if ((format_flags & FORMATO_ITALICO) > 0) {
-
-          out.print("</span>");
-        }
-
-        out.println("</li>");
+        out.println("<li>" + p.formataParaImpressao() + "</li>");
         count++;
       }
     }

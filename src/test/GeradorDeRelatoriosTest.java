@@ -1,10 +1,11 @@
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,12 +14,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import src.GeradorDeRelatorios;
-import src.Produto;
-import src.ProdutoPadrao;
 import src.filters.CategoryEqualsFilter;
 import src.filters.FilterStrategy;
 import src.filters.NoFilter;
 import src.filters.StockLessThanOrEqualFilter;
+import src.produto.Produto;
+import src.produto.ProdutoPadrao;
+import src.produto.formatacao.FormatTypes;
 import src.sort.QuickSort;
 import src.sort.SortStrategy;
 import src.sort.comparators.DescriptionComparator;
@@ -27,7 +29,8 @@ import src.sort.comparators.PriceComparator;
 public class GeradorDeRelatoriosTest {
   private Produto[] produtos;
   private GeradorDeRelatorios gerador;
-  private SortStrategy sortingStrategy = new QuickSort();
+  private final SortStrategy sortingStrategy = new QuickSort();
+  private static List<FormatTypes> formatList = new ArrayList<>();
 
   @Before
   public void setUp() {
@@ -79,37 +82,38 @@ public class GeradorDeRelatoriosTest {
     // Deletar o arquivo após o teste
     try {
       Files.deleteIfExists(Paths.get("saida_teste.html"));
-    } catch (IOException e) {
+    } catch (final IOException e) {
       e.printStackTrace();
     }
   }
 
   @Test
   public void testGeraRelatorioTodos() {
-    gerador = new GeradorDeRelatorios(
-        produtos, sortingStrategy, new DescriptionComparator(), new NoFilter(),
-        GeradorDeRelatorios.FORMATO_PADRAO);
+    gerador = new GeradorDeRelatorios(produtos, sortingStrategy,
+                                      new DescriptionComparator(),
+                                      new NoFilter(), formatList);
     try {
       gerador.geraRelatorio("saida_teste.html");
-      String content = Files.readString(Paths.get("saida_teste.html"));
+      final String content = Files.readString(Paths.get("saida_teste.html"));
       assertTrue(content.contains("Relatorio de Produtos"));
       assertTrue(content.contains("32 produtos listados, de um total de 32."));
 
       // Verificar a ordem crescente das descrições na lista e extrai os
       // produtos do relatório
-      Document doc = Jsoup.parse(content);
-      Elements lis = doc.select("ul li");
+      final Document doc = Jsoup.parse(content);
+      final Elements lis = doc.select("ul li");
       String descricaoAnterior = "";
 
-      Produto[] produtosDoRelatorio = new Produto[lis.size()];
+      final Produto[] produtosDoRelatorio = new Produto[lis.size()];
       int index = 0;
 
-      for (Element li : lis) {
-        String[] parts = li.text().split(", ");
-        String descricao = parts[0];
-        String categoria = parts[1];
-        double preco = Double.parseDouble(parts[2].replaceAll("[^\\d.]", ""));
-        int quantidade = Integer.parseInt(parts[3].split(" ")[0]);
+      for (final Element li : lis) {
+        final String[] parts = li.text().split(", ");
+        final String descricao = parts[0];
+        final String categoria = parts[1];
+        final double preco =
+            Double.parseDouble(parts[2].replaceAll("[^\\d.]", ""));
+        final int quantidade = Integer.parseInt(parts[3].split(" ")[0]);
         produtosDoRelatorio[index++] =
             new ProdutoPadrao(0, descricao, categoria, quantidade, preco);
 
@@ -122,17 +126,18 @@ public class GeradorDeRelatoriosTest {
       // relatório
       assertTrue("Não gerou todos os produtos.",
                  produtosDoRelatorio.length == produtos.length);
-      for (Produto produto : produtos) {
+      for (final Produto produto : produtos) {
         assertTrue("Não gerou todos os produtos.",
                    produtoEstaPresente(produto, produtosDoRelatorio));
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       fail("Falha ao gerar o relatório: " + e.getMessage());
     }
   }
 
-  private boolean produtoEstaPresente(Produto produto, Produto[] produtos) {
-    for (Produto p : produtos) {
+  private boolean produtoEstaPresente(final Produto produto,
+                                      final Produto[] produtos) {
+    for (final Produto p : produtos) {
       if (produto.getDescricao().equals(p.getDescricao()) &&
           produto.getCategoria().equals(p.getCategoria()) &&
           produto.getPreco() == p.getPreco() &&
@@ -145,25 +150,27 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioFiltragemEstoque() {
-    FilterStrategy stockLEFilter = new StockLessThanOrEqualFilter();
+    final FilterStrategy stockLEFilter = new StockLessThanOrEqualFilter();
     stockLEFilter.setFilterArg("10");
+
     gerador = new GeradorDeRelatorios(produtos, sortingStrategy,
                                       new PriceComparator(), stockLEFilter,
-                                      GeradorDeRelatorios.FORMATO_NEGRITO);
+                                      formatList);
+
     try {
       gerador.geraRelatorio("saida_teste.html");
-      String content = Files.readString(Paths.get("saida_teste.html"));
+      final String content = Files.readString(Paths.get("saida_teste.html"));
       assertTrue(content.contains("26 produtos listados, de um total de 32."));
 
       // Verificar a ordem crescente dos preços na lista
-      Document doc = Jsoup.parse(content);
-      Elements lis = doc.select("ul li");
+      final Document doc = Jsoup.parse(content);
+      final Elements lis = doc.select("ul li");
       double precoAnterior = 0;
-      for (Element li : lis) {
-        String[] parts = li.text().split(", ");
-        double preco =
+      for (final Element li : lis) {
+        final String[] parts = li.text().split(", ");
+        final double preco =
             Double.parseDouble(parts[2].substring(1).replace(",", ""));
-        int quantidade = Integer.parseInt(parts[3].split(" ")[0]);
+        final int quantidade = Integer.parseInt(parts[3].split(" ")[0]);
 
         assertTrue("A quantidade de estoque não é menor ou igual a 10",
                    quantidade <= 10);
@@ -171,33 +178,33 @@ public class GeradorDeRelatoriosTest {
                    preco >= precoAnterior);
         precoAnterior = preco;
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       fail("Falha ao gerar o relatório: " + e.getMessage());
     }
   }
 
   @Test
   public void testGeraRelatorioFiltragemCategoria() {
-    FilterStrategy categoryEquals = new CategoryEqualsFilter();
+    final FilterStrategy categoryEquals = new CategoryEqualsFilter();
     categoryEquals.setFilterArg("Games");
 
-    gerador = new GeradorDeRelatorios(
-        produtos, sortingStrategy, new DescriptionComparator(), categoryEquals,
-        GeradorDeRelatorios.FORMATO_ITALICO);
+    gerador = new GeradorDeRelatorios(produtos, sortingStrategy,
+                                      new DescriptionComparator(),
+                                      categoryEquals, formatList);
     try {
       gerador.geraRelatorio("saida_teste.html");
-      String content = Files.readString(Paths.get("saida_teste.html"));
+      final String content = Files.readString(Paths.get("saida_teste.html"));
       assertTrue(content.contains("9 produtos listados, de um total de 32."));
 
       // Verificar se todos os produtos no relatório são da categoria "Games"
-      Document doc = Jsoup.parse(content);
-      Elements lis = doc.select("ul li");
-      for (Element li : lis) {
-        String categoria = li.text().split(", ")[1];
+      final Document doc = Jsoup.parse(content);
+      final Elements lis = doc.select("ul li");
+      for (final Element li : lis) {
+        final String categoria = li.text().split(", ")[1];
         assertTrue("O produto não é da categoria 'Games'",
                    categoria.equalsIgnoreCase("Games"));
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       fail("Falha ao gerar o relatório: " + e.getMessage());
     }
   }

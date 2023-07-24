@@ -2,7 +2,7 @@ package src.filters;
 
 import java.util.function.Predicate;
 
-import src.Produto;
+import src.produto.Produto;
 
 /**
  * FilterStrategy

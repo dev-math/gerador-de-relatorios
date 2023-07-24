@@ -2,7 +2,7 @@ package src.sort;
 
 import java.util.Comparator;
 
-import src.Produto;
+import src.produto.Produto;
 
 /**
  * SortingStrategy
