@@ -6,7 +6,9 @@ package src.filters;
 public enum FilterTypes {
   NONE("todos", new NoFilter()),
   STOCK_LESS_EQUAL("estoque_menor_igual", new StockLessThanOrEqualFilter()),
-  CATEGORY_EQUALS("categoria_igual", new CategoryEqualsFilter());
+  CATEGORY_EQUALS("categoria_igual", new CategoryEqualsFilter()),
+  DESCRIPTION_CONTAINS("descricao_contem", new DescriptionContainsFilter()),
+  PRICE_RANGE("preco_intervalo", new PriceRangeFilter());
 
   // Método para obter o FilterStrategy a partir do nome do filtro
   public static FilterStrategy getFilterStrategyByName(final String name,
