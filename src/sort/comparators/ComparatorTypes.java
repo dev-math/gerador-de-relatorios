@@ -1,16 +1,18 @@
 package src.sort.comparators;
 
 import java.util.Comparator;
-
 import src.produto.Produto;
 
 /**
  * ComparatorTypes
  */
 public enum ComparatorTypes {
-  DESCRIPTION("descricao_c", new DescriptionComparator()),
-  PRICE("preco_c", new PriceComparator()),
-  STOCK_QUANTITY("estoque_c", new StockQuantityComparator());
+  DESCRIPTION_ASC("descricao_c", new DescriptionComparator(true)),
+  DESCRIPTION_DES("descricao_d", new DescriptionComparator(false)),
+  PRICE_ASC("preco_c", new PriceComparator(true)),
+  PRICE_DES("preco_d", new PriceComparator(false)),
+  STOCK_QUANTITY_ASC("estoque_c", new StockQuantityComparator(true)),
+  STOCK_QUANTITY_DES("estoque_d", new StockQuantityComparator(false));
 
   private String comparatorName;
   private Comparator<Produto> comparator;
