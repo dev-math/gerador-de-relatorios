@@ -41,6 +41,34 @@ public class FilterTests {
         filter.test(new ProdutoPadrao(3, "Produto C", "Categoria 2", 20, 19)));
   }
 
+  @Test
+  public void testPriceRangeFilter() {
+    FilterStrategy filter =
+        FilterTypes.getFilterStrategyByName("preco_intervalo", "10@30");
+
+    assertTrue(
+        filter.test(new ProdutoPadrao(1, "Produto A", "Categoria 1", 2, 12)));
+    assertTrue(
+        filter.test(new ProdutoPadrao(2, "Produto B", "Categoria 2", 15, 20)));
+    assertFalse(
+        filter.test(new ProdutoPadrao(3, "Produto C", "Categoria 3", 25, 5)));
+  }
+
+  @Test
+  public void testDescriptionContainsFilter() {
+    FilterStrategy filter =
+        FilterTypes.getFilterStrategyByName("descricao_contem", "Produto");
+
+    assertTrue(
+        filter.test(new ProdutoPadrao(1, "Produto A", "Categoria 1", 2, 12)));
+    assertTrue(
+        filter.test(new ProdutoPadrao(2, "Produto B", "Categoria 2", 15, 20)));
+    assertTrue(filter.test(
+        new ProdutoPadrao(3, "Outro Produto", "Categoria 3", 25, 5)));
+    assertFalse(
+        filter.test(new ProdutoPadrao(4, "Outro", "Categoria 3", 25, 5)));
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void testInvalidFilterName() {
     FilterTypes.getFilterStrategyByName("filtro_invalido", "parametro");
