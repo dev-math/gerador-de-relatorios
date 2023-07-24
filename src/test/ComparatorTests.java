@@ -24,9 +24,8 @@ public class ComparatorTests {
     assertEquals("Teclado", produtos.get(2).getDescricao());
 
     // Ordenação decrescente por descrição
-    Collections.sort(
-        produtos,
-        ComparatorTypes.getComparatorByName("descricao_c").reversed());
+    Collections.sort(produtos,
+                     ComparatorTypes.getComparatorByName("descricao_d"));
     assertEquals("Teclado", produtos.get(0).getDescricao());
     assertEquals("Mouse", produtos.get(1).getDescricao());
     assertEquals("Monitor", produtos.get(2).getDescricao());
@@ -46,8 +45,7 @@ public class ComparatorTests {
     assertEquals(200.0, produtos.get(2).getPreco(), 0.01);
 
     // Ordenação decrescente por preço
-    Collections.sort(produtos,
-                     ComparatorTypes.getComparatorByName("preco_c").reversed());
+    Collections.sort(produtos, ComparatorTypes.getComparatorByName("preco_d"));
     assertEquals(200.0, produtos.get(0).getPreco(), 0.01);
     assertEquals(50.0, produtos.get(1).getPreco(), 0.01);
     assertEquals(25.0, produtos.get(2).getPreco(), 0.01);
@@ -68,8 +66,8 @@ public class ComparatorTests {
     assertEquals(10, produtos.get(2).getQtdEstoque());
 
     // Ordenação decrescente por quantidade em estoque
-    Collections.sort(
-        produtos, ComparatorTypes.getComparatorByName("estoque_c").reversed());
+    Collections.sort(produtos,
+                     ComparatorTypes.getComparatorByName("estoque_d"));
     assertEquals(10, produtos.get(0).getQtdEstoque());
     assertEquals(5, produtos.get(1).getQtdEstoque());
     assertEquals(2, produtos.get(2).getQtdEstoque());
