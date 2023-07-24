@@ -1,9 +1,12 @@
 package src.produto;
 
 public class ProdutoNegrito extends ProdutoDecorator {
-  private Produto produto;
+  private final Produto produto;
 
-  public ProdutoNegrito(final Produto produto) { super(produto); }
+  public ProdutoNegrito(final Produto produto) {
+    super(produto);
+    this.produto = produto;
+  }
 
   @Override
   public String formataParaImpressao() {
