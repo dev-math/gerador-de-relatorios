@@ -4,7 +4,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.jsoup.Jsoup;
@@ -21,7 +20,6 @@ import src.filters.NoFilter;
 import src.filters.StockLessThanOrEqualFilter;
 import src.produto.Produto;
 import src.produto.ProdutoPadrao;
-import src.produto.formatacao.FormatTypes;
 import src.sort.QuickSort;
 import src.sort.SortStrategy;
 import src.sort.comparators.ComparatorTypes;
@@ -30,7 +28,6 @@ public class GeradorDeRelatoriosTest {
   private List<Produto> produtos;
   private GeradorDeRelatorios gerador;
   private final SortStrategy sortingStrategy = new QuickSort();
-  private static List<FormatTypes> formatList = new ArrayList<>();
 
   @Before
   public void setUp() {
@@ -91,8 +88,7 @@ public class GeradorDeRelatoriosTest {
   public void testGeraRelatorioTodos() {
     gerador = new GeradorDeRelatorios(
         produtos, sortingStrategy,
-        ComparatorTypes.getComparatorByName("descricao_c"), new NoFilter(),
-        formatList);
+        ComparatorTypes.getComparatorByName("descricao_c"), new NoFilter());
     try {
       gerador.geraRelatorio("saida_teste.html");
       final String content = Files.readString(Paths.get("saida_teste.html"));
@@ -156,10 +152,9 @@ public class GeradorDeRelatoriosTest {
     final FilterStrategy stockLEFilter = new StockLessThanOrEqualFilter();
     stockLEFilter.setFilterArg("10");
 
-    gerador =
-        new GeradorDeRelatorios(produtos, sortingStrategy,
-                                ComparatorTypes.getComparatorByName("preco_c"),
-                                stockLEFilter, formatList);
+    gerador = new GeradorDeRelatorios(
+        produtos, sortingStrategy,
+        ComparatorTypes.getComparatorByName("preco_c"), stockLEFilter);
 
     try {
       gerador.geraRelatorio("saida_teste.html");
@@ -194,8 +189,7 @@ public class GeradorDeRelatoriosTest {
 
     gerador = new GeradorDeRelatorios(
         produtos, sortingStrategy,
-        ComparatorTypes.getComparatorByName("descricao_c"), categoryEquals,
-        formatList);
+        ComparatorTypes.getComparatorByName("descricao_c"), categoryEquals);
     try {
       gerador.geraRelatorio("saida_teste.html");
       final String content = Files.readString(Paths.get("saida_teste.html"));

@@ -17,27 +17,6 @@ import src.sort.comparators.ComparatorTypes;
  * Main
  */
 public class Main {
-  private static List<FormatTypes> parseFormatFlags(String[] args) {
-    String[] formatOptions = new String[2];
-
-    if (args.length > 4) {
-      formatOptions[0] = args[4];
-    }
-
-    if (args.length > 5) {
-      formatOptions[1] = args[5];
-    }
-
-    List<FormatTypes> formatList = new ArrayList<>();
-
-    for (String option : formatOptions) {
-      FormatTypes formatType = FormatTypes.getFormatTypeByName(option);
-      formatList.add(formatType);
-    }
-
-    return formatList;
-  }
-
   public static void main(String[] args) {
     if (args.length < 4) {
       printHelpMessage();
@@ -57,10 +36,9 @@ public class Main {
         opcao_criterio_filtro, opcao_parametro_filtro);
 
     List<Produto> produtosList = ProdutoLoader.loadProductsFromCSV(args[4]);
-    List<FormatTypes> formatOptions = parseFormatFlags(args);
 
-    GeradorDeRelatorios gdr = new GeradorDeRelatorios(
-        produtosList, sortStrategy, comparador, filter, formatOptions);
+    GeradorDeRelatorios gdr =
+        new GeradorDeRelatorios(produtosList, sortStrategy, comparador, filter);
 
     try {
       gdr.geraRelatorio("saida.html");

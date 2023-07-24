@@ -5,10 +5,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
 import src.filters.FilterStrategy;
 import src.produto.Produto;
-import src.produto.formatacao.FormatTypes;
 import src.sort.SortStrategy;
 
 public class GeradorDeRelatorios {
@@ -20,8 +18,7 @@ public class GeradorDeRelatorios {
   public GeradorDeRelatorios(final List<Produto> produtos,
                              final SortStrategy sortingStrategy,
                              final Comparator<Produto> criterioOrdenacao,
-                             final FilterStrategy filter,
-                             final List<FormatTypes> formatDecorators) {
+                             final FilterStrategy filter) {
 
     this.produtos = new ArrayList<>(produtos);
     this.sortingStrategy = sortingStrategy;
