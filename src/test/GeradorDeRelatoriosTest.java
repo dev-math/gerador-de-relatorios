@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,14 +28,14 @@ import src.sort.comparators.DescriptionComparator;
 import src.sort.comparators.PriceComparator;
 
 public class GeradorDeRelatoriosTest {
-  private Produto[] produtos;
+  private List<Produto> produtos;
   private GeradorDeRelatorios gerador;
   private final SortStrategy sortingStrategy = new QuickSort();
   private static List<FormatTypes> formatList = new ArrayList<>();
 
   @Before
   public void setUp() {
-    produtos = new Produto[] {
+    produtos = Arrays.asList(new Produto[] {
         new ProdutoPadrao(1, "O Hobbit", "Livros", 2, 34.90),
         new ProdutoPadrao(2, "Notebook Core i7", "Informatica", 5, 1999.90),
         new ProdutoPadrao(3, "Resident Evil 4", "Games", 7, 79.90),
@@ -74,7 +75,7 @@ public class GeradorDeRelatoriosTest {
         new ProdutoPadrao(31, "The Art of Computer Programming Vol. 2",
                           "Livros", 2, 200.00),
         new ProdutoPadrao(32, "The Art of Computer Programming Vol. 3",
-                          "Livros", 4, 270.00)};
+                          "Livros", 4, 270.00)});
   }
 
   @After
@@ -125,7 +126,7 @@ public class GeradorDeRelatoriosTest {
       // Verificar se todos os produtos do vetor produtos estão presentes no
       // relatório
       assertTrue("Não gerou todos os produtos.",
-                 produtosDoRelatorio.length == produtos.length);
+                 produtosDoRelatorio.length == produtos.size());
       for (final Produto produto : produtos) {
         assertTrue("Não gerou todos os produtos.",
                    produtoEstaPresente(produto, produtosDoRelatorio));

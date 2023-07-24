@@ -1,21 +1,23 @@
 package src.sort;
 
 import java.util.Comparator;
-
+import java.util.List;
 import src.produto.Produto;
 
 public class InsertionSort implements SortStrategy {
-  public void sort(Produto[] array, Comparator<Produto> comparator) {
-    for (int i = 1; i < array.length; i++) {
-      Produto current = array[i];
+  @Override
+  public void sort(final List<Produto> produtos,
+                   final Comparator<Produto> comparator) {
+    for (int i = 1; i < produtos.size(); i++) {
+      final Produto current = produtos.get(i);
       int j = i - 1;
 
-      while (j >= 0 && comparator.compare(array[j], current) > 0) {
-        array[j + 1] = array[j];
+      while (j >= 0 && comparator.compare(produtos.get(j), current) > 0) {
+        produtos.set(j + 1, produtos.get(j));
         j--;
       }
 
-      array[j + 1] = current;
+      produtos.set(j + 1, current);
     }
   }
 }

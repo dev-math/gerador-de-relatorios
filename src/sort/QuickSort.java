@@ -1,41 +1,45 @@
 package src.sort;
 
 import java.util.Comparator;
-
+import java.util.List;
 import src.produto.Produto;
 
 public class QuickSort implements SortStrategy {
-  public void sort(Produto[] array, Comparator<Produto> comparator) {
-    quickSort(array, 0, array.length - 1, comparator);
-  }
-
-  private static void quickSort(Produto[] array, int left, int right,
-                                Comparator<Produto> comparator) {
+  private static void quickSort(final List<Produto> produtos, final int left,
+                                final int right,
+                                final Comparator<Produto> comparator) {
     if (left < right) {
-      int partitionIndex = partition(array, left, right, comparator);
-      quickSort(array, left, partitionIndex - 1, comparator);
-      quickSort(array, partitionIndex + 1, right, comparator);
+      final int partitionIndex = partition(produtos, left, right, comparator);
+      quickSort(produtos, left, partitionIndex - 1, comparator);
+      quickSort(produtos, partitionIndex + 1, right, comparator);
     }
   }
 
-  private static int partition(Produto[] array, int left, int right,
-                               Comparator<Produto> comparator) {
-    Produto pivot = array[right];
+  private static int partition(final List<Produto> produtos, final int left,
+                               final int right,
+                               final Comparator<Produto> comparator) {
+    final Produto pivot = produtos.get(right);
     int i = left - 1;
 
     for (int j = left; j < right; j++) {
-      if (comparator.compare(array[j], pivot) < 0) {
+      if (comparator.compare(produtos.get(j), pivot) < 0) {
         i++;
-        Produto temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
+        final Produto temp = produtos.get(i);
+        produtos.set(i, produtos.get(j));
+        produtos.set(j, temp);
       }
     }
 
-    Produto temp = array[i + 1];
-    array[i + 1] = array[right];
-    array[right] = temp;
+    final Produto temp = produtos.get(i + 1);
+    produtos.set(i + 1, produtos.get(right));
+    produtos.set(right, temp);
 
     return i + 1;
+  }
+
+  @Override
+  public void sort(final List<Produto> produtos,
+                   final Comparator<Produto> comparator) {
+    quickSort(produtos, 0, produtos.size() - 1, comparator);
   }
 }

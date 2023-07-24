@@ -2,6 +2,7 @@ package src;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import src.filters.FilterStrategy;
@@ -59,8 +60,7 @@ public class Main {
     }
 
     String opcao_algoritmo = args[0];
-    SortStrategy sortStrategy =
-        SortTypes.getSortingStrategyByName(opcao_algoritmo);
+    SortStrategy sortStrategy = SortTypes.getSortingStrategyByName(opcao_algoritmo);
 
     String opcao_criterio_ord = args[1];
     Comparator<Produto> comparador =
@@ -71,12 +71,11 @@ public class Main {
     FilterStrategy filter = FilterTypes.getFilterStrategyByName(
         opcao_criterio_filtro, opcao_parametro_filtro);
 
-    Produto[] produtos = carregaProdutos();
-
+    List<Produto> produtosList = Arrays.asList(carregaProdutos());
     List<FormatTypes> formatOptions = parseFormatFlags(args);
 
     GeradorDeRelatorios gdr = new GeradorDeRelatorios(
-        produtos, sortStrategy, comparador, filter, formatOptions);
+        produtosList, sortStrategy, comparador, filter, formatOptions);
 
     try {
       gdr.geraRelatorio("saida.html");
