@@ -5,10 +5,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 import src.filters.FilterStrategy;
 import src.produto.Produto;
-import src.produto.ProdutoItalico;
-import src.produto.ProdutoNegrito;
 import src.produto.formatacao.FormatTypes;
 import src.sort.SortStrategy;
 
@@ -17,7 +16,6 @@ public class GeradorDeRelatorios {
   private final SortStrategy sortingStrategy;
   private final Comparator<Produto> criterioOrdenacao;
   private final FilterStrategy filter;
-  private final List<FormatTypes> formatDecorators;
 
   public GeradorDeRelatorios(final List<Produto> produtos,
                              final SortStrategy sortingStrategy,
@@ -28,7 +26,6 @@ public class GeradorDeRelatorios {
     this.produtos = new ArrayList<>(produtos);
     this.sortingStrategy = sortingStrategy;
     this.criterioOrdenacao = criterioOrdenacao;
-    this.formatDecorators = formatDecorators;
     this.filter = filter;
   }
 
@@ -45,26 +42,15 @@ public class GeradorDeRelatorios {
 
     int count = 0;
 
-    for (Produto p : produtos) {
+    for (final Produto p : produtos) {
       final boolean selecionado = filter.test(p);
 
-      if (selecionado) {
-        for (final FormatTypes formatType : formatDecorators) {
-          switch (formatType) {
-          case BOLD:
-            p = new ProdutoNegrito(p);
-            break;
-          case ITALIC:
-            p = new ProdutoItalico(p);
-            break;
-          default:
-            break;
-          }
-        }
-
-        out.println("<li>" + p.formataParaImpressao() + "</li>");
-        count++;
+      if (!selecionado) {
+        continue;
       }
+
+      out.println("<li>" + p.formataParaImpressao() + "</li>");
+      count++;
     }
 
     out.println("</ul>");
