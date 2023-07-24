@@ -24,8 +24,7 @@ import src.produto.ProdutoPadrao;
 import src.produto.formatacao.FormatTypes;
 import src.sort.QuickSort;
 import src.sort.SortStrategy;
-import src.sort.comparators.DescriptionComparator;
-import src.sort.comparators.PriceComparator;
+import src.sort.comparators.ComparatorTypes;
 
 public class GeradorDeRelatoriosTest {
   private List<Produto> produtos;
@@ -90,16 +89,19 @@ public class GeradorDeRelatoriosTest {
 
   @Test
   public void testGeraRelatorioTodos() {
-    gerador = new GeradorDeRelatorios(produtos, sortingStrategy,
-                                      new DescriptionComparator(),
-                                      new NoFilter(), formatList);
+    gerador = new GeradorDeRelatorios(
+        produtos, sortingStrategy,
+        ComparatorTypes.getComparatorByName("descricao_c"), new NoFilter(),
+        formatList);
     try {
       gerador.geraRelatorio("saida_teste.html");
       final String content = Files.readString(Paths.get("saida_teste.html"));
       assertTrue(content.contains("Relatorio de Produtos"));
-      assertTrue(content.contains("32 produtos listados, de um total de 32."));
+      assertTrue(content.contains(produtos.size() +
+                                  " produtos listados, de um total de " +
+                                  produtos.size() + "."));
 
-      // Verificar a ordem crescente das descrições na lista e extrai os
+      // Verificar a ordem crescente das descrições na lista e extrair os
       // produtos do relatório
       final Document doc = Jsoup.parse(content);
       final Elements lis = doc.select("ul li");
@@ -154,9 +156,10 @@ public class GeradorDeRelatoriosTest {
     final FilterStrategy stockLEFilter = new StockLessThanOrEqualFilter();
     stockLEFilter.setFilterArg("10");
 
-    gerador = new GeradorDeRelatorios(produtos, sortingStrategy,
-                                      new PriceComparator(), stockLEFilter,
-                                      formatList);
+    gerador =
+        new GeradorDeRelatorios(produtos, sortingStrategy,
+                                ComparatorTypes.getComparatorByName("preco_c"),
+                                stockLEFilter, formatList);
 
     try {
       gerador.geraRelatorio("saida_teste.html");
@@ -189,9 +192,10 @@ public class GeradorDeRelatoriosTest {
     final FilterStrategy categoryEquals = new CategoryEqualsFilter();
     categoryEquals.setFilterArg("Games");
 
-    gerador = new GeradorDeRelatorios(produtos, sortingStrategy,
-                                      new DescriptionComparator(),
-                                      categoryEquals, formatList);
+    gerador = new GeradorDeRelatorios(
+        produtos, sortingStrategy,
+        ComparatorTypes.getComparatorByName("descricao_c"), categoryEquals,
+        formatList);
     try {
       gerador.geraRelatorio("saida_teste.html");
       final String content = Files.readString(Paths.get("saida_teste.html"));
