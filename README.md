@@ -1,4 +1,5 @@
 # Report generator in JAVA.
+Refactored Java "Report Generator" project using Strategy & Decorator patterns. Customizable sorting, filtering & formatting for product listings. Utilizes Java collections for improved data handling. New features include descending sorting, price range filtering, substring-based filtering, text color decorators, and CSV data import.
 
 ## Usage
 Follow the steps below for running it.
